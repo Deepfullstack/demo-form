@@ -1,80 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact Form</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lead Form Demo</title>
+  <script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('lead-form');
+      const modal = document.getElementById('thank-you-modal');
+      const modalTime = document.getElementById('submission-timestamp');
+      const closeBtn = document.getElementById('close-modal');
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const submitButton = document.getElementById('submit');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Submitting...';
+
+        try {
+          const response = await fetch(this.action, {
+            method: 'POST',
+            body: formData
+          });
+          const result = await response.json();
+
+          if (result.result === 'success') {
+            modalTime.textContent = new Date(result.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+            modal.classList.remove('hidden');
+            this.reset();
+          } else {
+            alert('Error submitting form. Please try again.');
+          }
+        } catch (error) {
+          alert('Submission failed: ' + error.message);
+        }
+
+        submitButton.disabled = false;
+        submitButton.textContent = 'Submit Now';
+      });
+
+      closeBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+      });
+    });
+  </script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      margin-top: 2rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, select {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 1rem;
+      background: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-    <h2 class="text-2xl font-bold mb-6 text-center">Contact Form</h2>
-    <div id="form-message" class="mb-4 text-center text-green-600 hidden"></div>
-    <form id="contact-form" class="space-y-4">
-      <div>
-        <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-        <input type="text" id="name" name="name" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-      </div>
-      <div>
-        <label for="mobile" class="block text-sm font-medium text-gray-700">Mobile No.</label>
-        <input type="tel" id="mobile" name="mobile" required pattern="[0-9]{10}" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter 10-digit mobile number">
-      </div>
-      <div>
-        <label for="course" class="block text-sm font-medium text-gray-700">Course</label>
-        <select id="course" name="course" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="" disabled selected>Select a course</option>
-          <option value="MPPSC">MPPSC</option>
-          <option value="UPSC">UPSC</option>
-          <option value="MPSI">MPSI</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-      <div>
-        <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
-        <textarea id="message" name="message" rows="4" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-      </div>
-      <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">Submit</button>
+<body>
+
+  <div class="container">
+    <h2>Fill Your Details</h2>
+    <form id="lead-form" action="https://script.google.com/macros/s/AKfycbzGCWgmmcATDkdB_xyQC-WwnntKIOlnGVIk-qghPEodRukipvQLwFwlAdIdxD-oGbTpWw/exec" method="POST">
+      <input type="text" name="full-name" placeholder="Full Name" required pattern="[A-Za-z\s]+" />
+      <input type="tel" name="mobile" placeholder="Mobile Number" required pattern="[0-9]{10}" />
+      <input type="date" name="dob" placeholder="Date of Birth" required />
+      <input type="text" name="city" placeholder="City" required pattern="[A-Za-z\s]+" />
+      <input type="text" name="pincode" placeholder="Pin Code" required pattern="[0-9]{6}" />
+
+      <select name="education" required>
+        <option value="">Current Education</option>
+        <option value="12th-pass">12th Pass</option>
+        <option value="graduation-1st-year">Graduation 1st Year</option>
+        <option value="graduation-2nd-year">Graduation 2nd Year</option>
+        <option value="graduation-final-year">Graduation Final Year</option>
+        <option value="graduate">Graduate</option>
+        <option value="post-graduation">Post Graduation</option>
+      </select>
+
+      <select name="course" required>
+        <option value="">Interested Course</option>
+        <option value="upsc">UPSC</option>
+        <option value="mppsc-dcdsp">MPPSC (DC/DSP)</option>
+        <option value="mppsc-forest">MPPSC Forest</option>
+        <option value="mpsi">MPSI</option>
+        <option value="ssc">SSC</option>
+        <option value="banking">Banking</option>
+        <option value="railway">Railway</option>
+        <option value="esb-vyapam">ESB (Vyapam)</option>
+      </select>
+
+      <select name="timing" required>
+        <option value="">Preferred Timing</option>
+        <option value="morning">Morning</option>
+        <option value="afternoon">Afternoon</option>
+        <option value="evening">Evening</option>
+      </select>
+
+      <button type="submit" id="submit">Submit Now</button>
     </form>
   </div>
 
-  <script>
-  document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('contact-form');
-  if (form) {
-    form.addEventListener('submit', async function(event) {
-      event.preventDefault();
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData);
-      const messageDiv = document.getElementById('form-message');
+  <!-- Thank You Modal -->
+  <div id="thank-you-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Thank You!</h2>
+      <p>Your form was submitted successfully at <strong id="submission-timestamp"></strong>.</p>
+      <button id="close-modal">Close</button>
+    </div>
+  </div>
 
-      try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbxn7WrNSmf9rtDRGgyL6ToVdWZ9DC7kX-GX75xeLvTu74-WCIUP-91bvpoZOqZvR2CLfw/exec', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        });
-
-        if (response.ok) {
-          messageDiv.textContent = 'Form submitted successfully!';
-          messageDiv.classList.remove('hidden', 'text-red-600');
-          messageDiv.classList.add('text-green-600');
-          form.reset();
-        } else {
-          throw new Error('Failed to submit form');
-        }
-      } catch (error) {
-        messageDiv.textContent = 'Error submitting form. Please try again.';
-        messageDiv.classList.remove('hidden', 'text-green-600');
-        messageDiv.classList.add('text-red-600');
-      }
-    });
-  } else {
-    console.error('Form element with ID "contact-form" not found.');
-  }
-});
-  </script>
 </body>
 </html>
